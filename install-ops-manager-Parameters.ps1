@@ -1,3 +1,5 @@
+# Azure Cloud Environment
+$Env = "AzureCloud" # AzureCloud, AzureChinaCloud, AzureUSGovernment, AzureGermanCloud
 # ID for your Subscription
 $SUBSCRIPTION_ID = "REDACTED"
 # Name for your Resource Group

@@ -16,37 +16,42 @@ catch {
 
 ############################ SCRIPTS ############################
 
-#region Verification
+#region Preparation
+#region Environment verification
+Write-Host "Verifying environment selection"
+if (!$Env) {
+  Write-Host "Choose Azure environment"
+  Write-Host "1) AzureCloud (default)"
+  Write-Host "2) AzureChinaCloud"
+  Write-Host "3) AzureGermanCloud"
+  Write-Host "4) AzureUSGovernment"
+  $EnvOpt = Read-Host "Please choose by entering 1, 2, 3 or 4: "
+  $Env = "AzureCloud"
+  Switch ($EnvOpt) {
+    "2" { $Env = "AzureChinaCloud"; }
+    "3" { $Env = "AzureGermanCloud"; }
+    "4" { $Env = "AzureUSGovernment"; }
+    default { $Env = "AzureCloud"; }
+  }
+}
+Switch ($Env) {
+  "AzureChinaCloud" { $STORAGE_ENDPOINT = "blob.core.chinacloudapi.cn"; }
+  "AzureGermanCloud" { $STORAGE_ENDPOINT = "blob.core.cloudapi.de"; }
+  "AzureUSGovernment" { $STORAGE_ENDPOINT = "blob.core.usgovcloudapi.net"; }
+  default { $STORAGE_ENDPOINT = "blob.core.windows.net"; }
+}
+#endregion Environment verification
+
+#region login verification
 Write-Host "Verifying Azure CLI"
-$Env = "AzureCloud"
-$STORAGE_ENDPOINT = "blob.core.windows.net"
 # check if user has login
 $LoginCheck = (az account list 2>&1 | ?{ $_ -match "error" })
 if ($LoginCheck) {
   Write-Host "You need login to continue..."
-  Write-Host "Which Azure environment do you want to login?"
-  Write-Host "1) AzureCloud (default)"
-  Write-Host "2) AzureChinaCloud"
-  Write-Host "3) AzureUSGovernment"
-  Write-Host "4) AzureGermanCloud"
-  $EnvOpt = Read-Host "Please choose by entering 1, 2, 3 or 4: "
-  $Env = "AzureCloud"
-  $STORAGE_ENDPOINT = "blob.core.windows.net"
-  if ("$EnvOpt" -eq 2) {
-    $Env = "AzureChinaCloud"
-    $STORAGE_ENDPOINT = "blob.core.chinacloudapi.cn"
-  }
-  if ("$EnvOpt" -eq 3) {
-    $Env = "AzureUSGovernment"
-    $STORAGE_ENDPOINT = "blob.core.usgovcloudapi.net"
-  }
-  if ("$EnvOpt" -eq 4) {
-    $Env = "AzureGermanCloud"
-    $STORAGE_ENDPOINT = "blob.core.cloudapi.de"
-  }
   Write-Host "Login to $Env..."
   az login --environment $Env
 }
+#region login verification
 
 Write-Host "Selecting Subscription"
 $SubscriptionCheck = (az account set --subscription  $SUBSCRIPTION_ID 2>&1 | ?{ $_ -match "exist" })
@@ -68,7 +73,7 @@ if ($ret.properties.provisioningState -ne "Succeeded") {
     Write-Error "Resource group creation failed"
     return
 }
-#endregion
+#endregion Preparation
 
 #region Network
 Write-Host ""
