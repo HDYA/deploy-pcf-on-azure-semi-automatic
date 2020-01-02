@@ -1,8 +1,6 @@
-# deploy-pcf-on-azure-semi-automatic
+# Script to deploy PCF (OpsManager) on Azure
 
-Script to deploy PCF (Mainly BOSH...) on Azure
-
-_Semi-automatic as there is still large amount of configurations to be completed manually on its web page._
+_Semi-automatic as there is still a large amount of configurations to be completed manually on `OpsManager`._
 
 ## Note
 
